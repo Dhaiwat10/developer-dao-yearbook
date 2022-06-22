@@ -3178,6 +3178,11 @@ globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
+goober@^2.0.18:
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.10.tgz#058def43ba1e3b06f973dbb372a4978aa42f1049"
+  integrity sha512-7PpuQMH10jaTWm33sQgBQvz45pHR8N4l3Cu3WMGEWmHShAcTuuP7I+5/DwKo39fwti5A80WAjvqgz6SSlgWmGA==
+
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/has-bigints/-/has-bigints-1.0.2.tgz#0871bd3e3d51626f6ca0966668ba35d5602d6eaa"
@@ -4154,6 +4159,13 @@ react-style-singleton@^2.2.0:
     get-nonce "^1.0.0"
     invariant "^2.2.4"
     tslib "^2.0.0"
+
+react-tag-input-component@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/react-tag-input-component/-/react-tag-input-component-1.0.7.tgz#c6b5f922d68ba795e8c444bf87b546a5a4683626"
+  integrity sha512-V+RrdG2Kh/nmMqLqVjDIsl23OTSVksTViP1dzTvd0QlOQT7FUeTA9Pd5xFLR7hax0Dshj3wDt6Y3VRIKzH1j2A==
+  dependencies:
+    goober "^2.0.18"
 
 react@18.1.0:
   version "18.1.0"
