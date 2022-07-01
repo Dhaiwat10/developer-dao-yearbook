@@ -19,7 +19,8 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-tag-input-component": "^1.0.7",
-    "wagmi": "^0.4.6"
+    "wagmi": "^0.4.6",
+    "web3.storage": "^4.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.14",
