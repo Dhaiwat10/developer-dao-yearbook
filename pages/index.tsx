@@ -45,10 +45,26 @@ export default function Home() {
   const uploadToServer = async (event) => {
     const body = new FormData();
     body.append('file', image);
-    const response = await fetch('/api/file', {
+    body.append('title', title);
+    body.append('name', name);
+    body.append('timestamp', timestamp);
+    body.append('message', message);
+
+    // const body = {
+    //   title,
+    //   name,
+    //   timestamp,
+    //   message,
+    //   image,
+    // };
+
+    console.log({ body });
+    const response = await fetch('/api/storage', {
       method: 'POST',
       body,
     });
+    const data = await response.json();
+    console.log({ data });
   };
 
   return (
@@ -77,7 +93,7 @@ export default function Home() {
         {image && <Image src={createObjectURL} height='200px' rounded='lg' />}
 
         <Input type='file' onChange={uploadToClient} />
-        
+
         <TagsInput
           value={friends}
           onChange={setFriends}
