@@ -10,16 +10,19 @@ import {
 } from '@chakra-ui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
-import { useContract } from 'wagmi';
+import { useContract, useSigner } from 'wagmi';
 import abi from '../abi.json';
 import { TagsInput } from 'react-tag-input-component';
+import { ConstructorFragment } from 'ethers/lib/utils';
 
 const CONTRACT_ADDRESS = '0x64e52D33C3826828f929fC7Ee00aD17f52844F1F';
 
 export default function Home() {
+  const { data: signer } = useSigner();
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
     contractInterface: abi.abi,
+    signerOrProvider: signer,
   });
 
   const [title, setTitle] = useState('');
@@ -33,6 +36,7 @@ export default function Home() {
 
   const [message, setMessage] = useState('');
 
+
   const uploadToClient = (event) => {
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
@@ -43,12 +47,13 @@ export default function Home() {
   };
 
   const uploadToServer = async (event) => {
-    const body = new FormData();
-    body.append('file', image);
-    const response = await fetch('/api/file', {
-      method: 'POST',
-      body,
-    });
+    // const body = new FormData();
+    // body.append('file', image);
+    // const response = await fetch('/api/file', {
+    //   method: 'POST',
+    //   body,
+    // });
+      contract.createNewMemory("bafybeif6shyaqfcxlatxcafgjoaljbpbixkbai4loynpiw5jz2cvhyhwai", timestamp, friends);
   };
 
   return (
