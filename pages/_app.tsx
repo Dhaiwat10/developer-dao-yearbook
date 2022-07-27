@@ -5,14 +5,6 @@ import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
 
-
-
-
-
-
-
-
-
 const { chains, provider } = configureChains(
   [chain.goerli], // you can add more chains here like chain.mainnet, chain.optimism etc.
   [
