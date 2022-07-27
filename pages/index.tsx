@@ -27,6 +27,7 @@ import { query, arweave, createVideoMeta, createPostInfo } from '../utils'
 //styling
 //invite David from lit to our next pairing session to walk us through setting up lit protocol so that only people who hold x token can sign this yearbook
 
+
 const CONTRACT_ADDRESS = "0x64e52D33C3826828f929fC7Ee00aD17f52844F1F";
 
 // basic exponential backoff in case of gateway timeout / error
