@@ -10,6 +10,7 @@ import { providers, utils } from "ethers";
 import { WebBundlr } from "@bundlr-network/client";
 import { APP_NAME } from "../utils";
 import { useRouter } from "next/router";
+import { useSigner } from 'wagmi'
 
 // list of supported currencies: https://docs.bundlr.network/docs/currencies
 const supportedCurrencies = {
@@ -33,6 +34,7 @@ export default function SignYearbook() {
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
     contractInterface: abi.abi,
+    signerOrProvider: signer,
   });
   //contract.Functioncall()
 
@@ -150,8 +152,9 @@ export default function SignYearbook() {
     }
   }
 
-   // save the video and metadata to Arweave
-   async function saveVideo() {
+   // save the image, metadata to Arweave
+   async function saveEntry() {
+    let eventDateAndTime =+ new Date();
     if (!file || !title || !name || !message) return
     const tags = [
       { name: 'Content-Type', value: 'text/plain' },
@@ -173,6 +176,8 @@ export default function SignYearbook() {
       const { data } = await tx.upload()
 
       console.log(`http://arweave.net/${data.id}`)
+      contract.createNewMemory(URI, eventDateAndTime, friends);
+      console.log("made it to the line after contract function call")
       setTimeout(() => {
         router.push('/')
       }, 2000)
@@ -249,7 +254,7 @@ export default function SignYearbook() {
                  <input className={inputStyle} onChange={e => splitFriendsAddresses(e.target.value)} placeholder='Friends' />
                  <p className={labelStyle}>Your Capsule Message</p>
                  <textarea placeholder='message' onChange={e => setMessage(e.target.value)} className={textAreaStyle}  />
-                 <button className={saveVideoButtonStyle} onClick={saveVideo}>Save Video</button>
+                 <button className={saveVideoButtonStyle} onClick={saveEntry}>Save Entry</button>
                </div>
             </div>
           )
