@@ -11,6 +11,8 @@ import { WebBundlr } from "@bundlr-network/client";
 import { APP_NAME } from "../utils";
 import { useRouter } from "next/router";
 import { useSigner } from 'wagmi'
+import LitJsSdk from 'lit-js-sdk'
+import Cookies from 'cookies'
 
 // list of supported currencies: https://docs.bundlr.network/docs/currencies
 const supportedCurrencies = {
@@ -30,7 +32,7 @@ const currencyOptions = Object.keys(supportedCurrencies).map((v) => {
   };
 });
 
-export default function SignYearbook() {
+export default function SignYearbook(props) {
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
     contractInterface: abi.abi,
@@ -212,7 +214,11 @@ export default function SignYearbook() {
 
 
 
-  // once the user has initialized Bundlr, show them their balance
+   if (!props.authorized) {
+    return (
+      <h2>Unauthorized</h2>
+    )
+  }
   return (
     <div>
       <h3 className={balanceStyle}>💰 Balance {Math.round(balance * 100) / 100}</h3>
@@ -263,6 +269,39 @@ export default function SignYearbook() {
     </div>
   )
 }
+
+export async function getServerSideProps({ req, res, query }) {
+  const { id } = query
+  const cookies = new Cookies(req, res)
+  const jwt = cookies.get('lit-auth')
+  if (!jwt) {
+    return {
+      props: {
+        authorized: false
+      },
+    }
+  }
+
+  const { verified, payload } = LitJsSdk.verifyJwt({ jwt })
+
+  if (
+    payload.baseUrl !== "http://localhost:3000"
+    || payload.path !== '/protected'
+    || payload.extraData !== id
+  ) {
+    return {
+      props: {
+        authorized: false
+      },
+    }
+  }
+  return {
+    props: {
+      authorized: verified ? true : false
+    },
+  }
+}
+
 const selectContainerStyle = css`
   margin: 10px 0px 20px;
 `;
