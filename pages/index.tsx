@@ -1,25 +1,18 @@
 //@ts-nocheck
-import {
-  Container,
-  Heading,
-  Input,
-  VStack,
-  FormLabel,
-  Textarea,
-  Button,
-  Image,
-} from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useContract } from "wagmi";
 import abi from "../abi.json";
 import { TagsInput } from "react-tag-input-component";
 import { WebBundlr } from "@bundlr-network/client";
-import { MainContext } from "../context";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { providers, utils } from "ethers";
 import { css } from "@emotion/css";
 import Link from "next/link";
 import { query, arweave, createVideoMeta, createPostInfo } from '../utils'
+import LitJsSdk from 'lit-js-sdk'
+import { MainContext } from '../context'
+import Cookies from 'js-cookie'
+
 //todo:
 //call the smart contract function in the same function that saves the video to arweave
 //add fund your bundlr wallet to the homepage
@@ -28,12 +21,56 @@ import { query, arweave, createVideoMeta, createPostInfo } from '../utils'
 
 
 const CONTRACT_ADDRESS = "0x64e52D33C3826828f929fC7Ee00aD17f52844F1F";
+const accessControlConditions = [
+  {
+    contractAddress: '0x25ed58c027921E14D86380eA2646E3a1B5C55A8b',
+    standardContractType: 'ERC721',
+    chain: 'ethereum',
+    method: 'balanceOf',
+    parameters: [
+      ':userAddress'
+    ],
+    returnValueTest: {
+      comparator: '>',
+      value: '0'
+    }
+  }
+]
 
 // basic exponential backoff in case of gateway timeout / error
 const wait = (ms) => new Promise((res) => setTimeout(res, ms))
 
 export default function Home() {
   const [images, setImages] = useState([])
+  const [connected, setConnected] = useState()
+  const { id } = useContext(MainContext)
+
+  async function connect() {
+    const resourceId = {
+      baseUrl: 'http://localhost:3000',
+      path: '/protected',
+      orgId: "",
+      role: "",
+      extraData: id
+    }
+
+    const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
+    await client.connect()
+    const authSig = await LitJsSdk.checkAndSignAuthMessage({chain: 'ethereum'})
+
+    await client.saveSigningCondition({ accessControlConditions, chain: 'ethereum', authSig, resourceId })
+    try {
+      const jwt = await client.getSignedToken({
+        accessControlConditions, chain: 'ethereum', authSig, resourceId: resourceId
+      })
+      Cookies.set('lit-auth', jwt, { expires: 1 })
+
+    } catch (err) {
+      console.log('error: ', err)
+    }
+    setConnected(true)
+
+  }
 
   // when app loads, fetch images
   useEffect(() => {
@@ -65,7 +102,12 @@ export default function Home() {
 
   return (
     <div className={containerStyle}>
-      {/* map over images and display them in the UI */}
+       {
+        !connected && <button onClick={connect}>Connect</button>
+      }
+      <Link href={`/signYearbook?id=${id}`}>
+        <a>Navigate to protected page</a>
+      </Link>
       {
         images.map(video => (
           <div className={videoContainerStyle} key={video.URI}>

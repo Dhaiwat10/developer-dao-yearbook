@@ -4,6 +4,10 @@ import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
+import { v4 as uuid } from 'uuid';
+import { MainContext } from '../context'
+
+const id = uuid()
 
 const { chains, provider } = configureChains(
   [chain.goerli], // you can add more chains here like chain.mainnet, chain.optimism etc.
@@ -34,7 +38,11 @@ function MyApp({ Component, pageProps }) {
   return (
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
+          <MainContext.Provider
+            value={{ id }}
+          >
           <Component {...pageProps} />
+          </MainContext.Provider>
         </RainbowKitProvider>
       </WagmiConfig>
   );
