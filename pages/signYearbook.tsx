@@ -41,11 +41,11 @@ export default function SignYearbook() {
   const [fileCost, setFileCost] = useState()
   const [URI, setURI] = useState()
   const [title, setTitle] = useState("");
-  const [name, setName] = useState("");
-  const [timestamp, setTimestmap] = useState("");
+  const [name, setName] = useState(""); 
+  const [timestamp, setTimestmap] = useState(""); //calculate this 
   const [friends, setFriends] = useState([]);
 
-  const [description, setDescription] = useState('')
+  const [message, setMessage] = useState('')
   const [bundlrInstance, setBundlrInstance] = useState();
   const [balance, setBalance] = useState(0);
 
@@ -136,6 +136,13 @@ export default function SignYearbook() {
     }
   }
 
+  function splitFriendsAddresses(string){
+    let split = string.split(",");
+    console.log("this is what's in split", split);
+    console.log("first element in this list", split[0]);
+    setFriends(split);
+  }
+
   async function checkUploadCost(bytes) {
     if (bytes) {
       const cost = await bundlrInstance.getPrice(bytes)
@@ -145,22 +152,23 @@ export default function SignYearbook() {
 
    // save the video and metadata to Arweave
    async function saveVideo() {
-    if (!file || !title || !description) return
+    if (!file || !title || !name || !message) return
     const tags = [
       { name: 'Content-Type', value: 'text/plain' },
       { name: 'App-Name', value: APP_NAME }
     ]
 
-    const video = {
+    const entry = {
       title,
-      description,
+      name,
       URI,
       createdAt: new Date(),
       createdBy: bundlrInstance.address,
+      message
     }
 
     try {
-      let tx = await bundlrInstance.createTransaction(JSON.stringify(video), { tags })
+      let tx = await bundlrInstance.createTransaction(JSON.stringify(entry), { tags })
       await tx.sign()
       const { data } = await tx.upload()
 
@@ -169,9 +177,11 @@ export default function SignYearbook() {
         router.push('/')
       }, 2000)
     } catch (err) {
-      console.log('error uploading video with metadata: ', err)
+      console.log('error uploading image with metadata: ', err)
     }
   }
+
+
 
   if (!bundlrInstance) {
     return  (
@@ -221,7 +231,7 @@ export default function SignYearbook() {
         {
           fileCost && <h4>Cost to upload: {Math.round((fileCost) * 1000) / 1000} MATIC</h4>
         }
-        <button className={buttonStyle} onClick={uploadFile}>Upload Video</button>
+        <button className={buttonStyle} onClick={uploadFile}>Upload Image</button>
         {/* if there is a URI, then show the form to upload it */}
         {
           URI && (
@@ -230,10 +240,15 @@ export default function SignYearbook() {
                 <a target="_blank" rel="noopener noreferrer" href={URI}>{URI}</a>
                </p>
                <div className={formStyle}>
-                 <p className={labelStyle}>Title</p>
-                 <input className={inputStyle} onChange={e => setTitle(e.target.value)} placeholder='Video title' />
-                 <p className={labelStyle}>Description</p>
-                 <textarea placeholder='Video description' onChange={e => setDescription(e.target.value)} className={textAreaStyle}  />
+               <p className={labelStyle}>Your Name</p>
+                 <input className={inputStyle} onChange={e => setName(e.target.value)} placeholder='Name' />
+                 <p className={labelStyle}>Your main project</p>
+                 <input className={inputStyle} onChange={e => setTitle(e.target.value)} placeholder='Work title' />
+                
+                 <p className={labelStyle}>Enter friends' addresses to tag them</p>
+                 <input className={inputStyle} onChange={e => splitFriendsAddresses(e.target.value)} placeholder='Friends' />
+                 <p className={labelStyle}>Your Capsule Message</p>
+                 <textarea placeholder='message' onChange={e => setMessage(e.target.value)} className={textAreaStyle}  />
                  <button className={saveVideoButtonStyle} onClick={saveVideo}>Save Video</button>
                </div>
             </div>
