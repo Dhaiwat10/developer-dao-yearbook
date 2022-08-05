@@ -221,7 +221,7 @@ export default function SignYearbook() {
         {
           fileCost && <h4>Cost to upload: {Math.round((fileCost) * 1000) / 1000} MATIC</h4>
         }
-        <button className={buttonStyle} onClick={uploadFile}>Upload Video</button>
+        <button className={buttonStyle} onClick={uploadFile}>Upload Image</button>
         {/* if there is a URI, then show the form to upload it */}
         {
           URI && (
@@ -234,7 +234,7 @@ export default function SignYearbook() {
                  <input className={inputStyle} onChange={e => setTitle(e.target.value)} placeholder='Video title' />
                  <p className={labelStyle}>Description</p>
                  <textarea placeholder='Video description' onChange={e => setDescription(e.target.value)} className={textAreaStyle}  />
-                 <button className={saveVideoButtonStyle} onClick={saveVideo}>Save Video</button>
+                 <button className={saveVideoButtonStyle} onClick={saveVideo}>Save</button>
                </div>
             </div>
           )
