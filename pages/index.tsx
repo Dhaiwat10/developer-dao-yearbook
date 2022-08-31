@@ -21,7 +21,6 @@ import { css } from "@emotion/css";
 import Link from "next/link";
 import { query, arweave, createVideoMeta, createPostInfo } from '../utils'
 //todo:
-//add the field for people to enter their title
 //call the smart contract function in the same function that saves the video to arweave
 //add fund your bundlr wallet to the homepage
 //styling
@@ -34,9 +33,9 @@ const CONTRACT_ADDRESS = "0x64e52D33C3826828f929fC7Ee00aD17f52844F1F";
 const wait = (ms) => new Promise((res) => setTimeout(res, ms))
 
 export default function Home() {
-  const [videos, setVideos] = useState([])
+  const [images, setImages] = useState([])
 
-  // when app loads, fetch videos
+  // when app loads, fetch images
   useEffect(() => {
     getPostInfo()
   }, [])
@@ -56,7 +55,7 @@ export default function Home() {
       )
       let sorted = posts.sort((a, b) => new Date(b.request.data.createdAt) - new Date(a.request.data.createdAt))
       sorted = sorted.map(s => s.request.data)
-      setVideos(sorted)
+      setImages(sorted)
     } catch (err) {
       await wait(2 ** depth * 10)
       getPostInfo(topicFilter, depth + 1)
@@ -66,15 +65,17 @@ export default function Home() {
 
   return (
     <div className={containerStyle}>
-      {/* map over videos and display them in the UI */}
+      {/* map over images and display them in the UI */}
       {
-        videos.map(video => (
+        images.map(video => (
           <div className={videoContainerStyle} key={video.URI}>
             <img key={video.URI} width="720px" height="405" controls className={videoStyle} src={video.URI}/>
             <div className={titleContainerStyle}>
-              <h3 className={titleStyle}>{video.title}</h3>
+              <h3 className={titleStyle}>{video.name}</h3>
             </div>
-            <p className={descriptionStyle}>{video.description}</p>
+            <p className={descriptionStyle}>{video.message}</p>
+            <p className={descriptionStyle}>{video.title}</p>
+            <p className={descriptionStyle}>{video.friends}</p>
           </div>
         ))
       }
