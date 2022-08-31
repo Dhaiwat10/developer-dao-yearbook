@@ -1,14 +1,18 @@
+//@ts-nocheck
+
 import { useState, useRef } from 'react';
 import { MainContext } from '../context';
 import { css } from '@emotion/css';
 import Select from 'react-select';
+import { APP_NAME } from '../utils';
+import { useSigner } from 'wagmi';
+import LitJsSdk from 'lit-js-sdk';
+import Cookies from 'cookies';
 import { useContract, useProvider } from 'wagmi';
 import abi from '../abi.json';
 import { providers, utils } from 'ethers';
 import { WebBundlr } from '@bundlr-network/client';
-import { APP_NAME } from '../utils';
 import { useRouter } from 'next/router';
-import { useSigner } from 'wagmi';
 
 // list of supported currencies: https://docs.bundlr.network/docs/currencies
 const supportedCurrencies = {
@@ -28,7 +32,7 @@ const currencyOptions = Object.keys(supportedCurrencies).map((v) => {
   };
 });
 
-export default function SignYearbook() {
+export default function SignYearbook({ authroized }) {
   const { data: signer } = useSigner();
   const provider = useProvider();
 
@@ -191,7 +195,10 @@ export default function SignYearbook() {
     );
   }
 
-  // once the user has initialized Bundlr, show them their balance
+  if (!authorized) {
+    return <h2>Unauthorized</h2>;
+  }
+
   return (
     <div>
       <h3 className={balanceStyle}>
@@ -262,6 +269,39 @@ export default function SignYearbook() {
     </div>
   );
 }
+
+export async function getServerSideProps({ req, res, query }) {
+  const { id } = query;
+  const cookies = new Cookies(req, res);
+  const jwt = cookies.get('lit-auth');
+  if (!jwt) {
+    return {
+      props: {
+        authorized: false,
+      },
+    };
+  }
+
+  const { verified, payload } = LitJsSdk.verifyJwt({ jwt });
+
+  if (
+    payload.baseUrl !== 'http://localhost:3000' ||
+    payload.path !== '/protected' ||
+    payload.extraData !== id
+  ) {
+    return {
+      props: {
+        authorized: false,
+      },
+    };
+  }
+  return {
+    props: {
+      authorized: verified ? true : false,
+    },
+  };
+}
+
 const selectContainerStyle = css`
   margin: 10px 0px 20px;
 `;
